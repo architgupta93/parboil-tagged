@@ -1,0 +1,263 @@
+
+Fatbin elf code:
+================
+arch = sm_20
+code version = [1,7]
+producer = <unknown>
+host = linux
+compile_size = 64bit
+
+Fatbin ptx code:
+================
+arch = sm_50
+code version = [4,3]
+producer = cuda
+host = linux
+compile_size = 64bit
+compressed
+ptxasOptions = -dlcm=cg  
+
+
+
+
+
+
+
+
+.version 4.3
+.target sm_50
+.address_size 64
+
+
+.global .texref g_graph_node_ref;
+.global .texref g_graph_edge_ref;
+.global .align 4 .u32 count;
+.global .align 4 .u32 no_of_nodes_vol;
+.global .align 4 .u32 stay_vol;
+
+
+
+
+.weak .func (.param .b32 func_retval0) cudaMalloc(
+.param .b64 cudaMalloc_param_0,
+.param .b64 cudaMalloc_param_1
+)
+{
+.reg .b32 %r<2>;
+
+
+mov.u32 %r1, 30;
+st.param.b32	[func_retval0+0], %r1;
+ret;
+}
+
+
+.weak .func (.param .b32 func_retval0) cudaFuncGetAttributes(
+.param .b64 cudaFuncGetAttributes_param_0,
+.param .b64 cudaFuncGetAttributes_param_1
+)
+{
+.reg .b32 %r<2>;
+
+
+mov.u32 %r1, 30;
+st.param.b32	[func_retval0+0], %r1;
+ret;
+}
+
+
+.weak .func (.param .b32 func_retval0) cudaDeviceGetAttribute(
+.param .b64 cudaDeviceGetAttribute_param_0,
+.param .b32 cudaDeviceGetAttribute_param_1,
+.param .b32 cudaDeviceGetAttribute_param_2
+)
+{
+.reg .b32 %r<2>;
+
+
+mov.u32 %r1, 30;
+st.param.b32	[func_retval0+0], %r1;
+ret;
+}
+
+
+.weak .func (.param .b32 func_retval0) cudaGetDevice(
+.param .b64 cudaGetDevice_param_0
+)
+{
+.reg .b32 %r<2>;
+
+
+mov.u32 %r1, 30;
+st.param.b32	[func_retval0+0], %r1;
+ret;
+}
+
+
+.weak .func (.param .b32 func_retval0) cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+.param .b64 cudaOccupancyMaxActiveBlocksPerMultiprocessor_param_0,
+.param .b64 cudaOccupancyMaxActiveBlocksPerMultiprocessor_param_1,
+.param .b32 cudaOccupancyMaxActiveBlocksPerMultiprocessor_param_2,
+.param .b64 cudaOccupancyMaxActiveBlocksPerMultiprocessor_param_3
+)
+{
+.reg .b32 %r<2>;
+
+
+mov.u32 %r1, 30;
+st.param.b32	[func_retval0+0], %r1;
+ret;
+}
+
+
+.weak .func (.param .b32 func_retval0) cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags(
+.param .b64 cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags_param_0,
+.param .b64 cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags_param_1,
+.param .b32 cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags_param_2,
+.param .b64 cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags_param_3,
+.param .b32 cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags_param_4
+)
+{
+.reg .b32 %r<2>;
+
+
+mov.u32 %r1, 30;
+st.param.b32	[func_retval0+0], %r1;
+ret;
+}
+
+
+.visible .entry _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii(
+.param .u64 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_0,
+.param .u64 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_1,
+.param .u64 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_2,
+.param .u64 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_3,
+.param .u64 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_4,
+.param .u64 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_5,
+.param .u32 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_6,
+.param .u64 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_7,
+.param .u32 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_8,
+.param .u32 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_9
+)
+{
+.reg .pred %p<11>;
+.reg .b32 %r<40>;
+.reg .b64 %rd<31>;
+
+	.shared .align 4 .u32 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62848_31_non_const_local_q_tail;
+
+	.shared .align 4 .b8 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62849_31_non_const_local_q[12800];
+
+	.shared .align 4 .u32 _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62851_31_non_const_shift;
+
+ld.param.u64 %rd6, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_0];
+ld.param.u64 %rd7, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_1];
+ld.param.u64 %rd9, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_4];
+ld.param.u64 %rd10, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_5];
+ld.param.u32 %r19, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_6];
+ld.param.u64 %rd8, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_7];
+ld.param.u32 %r20, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii_param_8];
+cvta.to.global.u64 %rd1, %rd10;
+cvta.to.global.u64 %rd2, %rd9;
+mov.u32 %r39, %tid.x;
+setp.ne.s32	%p2, %r39, 0;
+@%p2 bra BB6_2;
+
+mov.u32 %r21, 0;
+st.shared.u32 [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62848_31_non_const_local_q_tail], %r21;
+
+BB6_2:
+bar.sync 0;
+mov.u32 %r22, %ctaid.x;
+shl.b32 %r23, %r22, 9;
+add.s32 %r2, %r23, %r39;
+setp.ge.s32	%p3, %r2, %r19;
+@%p3 bra BB6_10;
+
+cvta.to.global.u64 %rd11, %rd6;
+mul.wide.s32 %rd12, %r2, 4;
+add.s64 %rd13, %rd11, %rd12;
+ld.global.u32 %r24, [%rd13];
+mul.wide.s32 %rd14, %r24, 4;
+add.s64 %rd15, %rd2, %rd14;
+mov.u32 %r25, 16677221;
+st.global.u32 [%rd15], %r25;
+add.s64 %rd16, %rd1, %rd14;
+ld.global.u32 %r3, [%rd16];
+tex.1d.v4.s32.s32	{%r4, %r5, %r6, %r7}, [g_graph_node_ref, {%r24}];
+setp.lt.s32	%p4, %r5, 1;
+@%p4 bra BB6_10;
+
+mov.u32 %r38, %r4;
+add.s32 %r10, %r5, %r4;
+
+BB6_5:
+tex.1d.v4.s32.s32	{%r12, %r26, %r27, %r28}, [g_graph_edge_ref, {%r38}];
+add.s32 %r29, %r26, %r3;
+mul.wide.s32 %rd18, %r12, 4;
+add.s64 %rd19, %rd1, %rd18;
+atom.global.min.s32 %r30, [%rd19], %r29;
+setp.le.s32	%p5, %r30, %r29;
+@%p5 bra BB6_9;
+
+add.s64 %rd4, %rd2, %rd18;
+ld.global.u32 %r31, [%rd4];
+setp.lt.s32	%p6, %r31, 16677217;
+@%p6 bra BB6_9;
+
+atom.global.exch.b32 %r32, [%rd4], %r20;
+setp.eq.s32	%p7, %r32, %r20;
+@%p7 bra BB6_9;
+
+mov.u64 %rd21, _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62848_31_non_const_local_q_tail;
+atom.shared.add.u32 %r33, [%rd21], 1;
+mul.wide.s32 %rd22, %r33, 4;
+mov.u64 %rd23, _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62849_31_non_const_local_q;
+add.s64 %rd24, %rd23, %rd22;
+st.shared.u32 [%rd24], %r12;
+
+BB6_9:
+add.s32 %r38, %r38, 1;
+setp.lt.s32	%p8, %r38, %r10;
+@%p8 bra BB6_5;
+
+BB6_10:
+setp.eq.s32	%p1, %r39, 0;
+bar.sync 0;
+@!%p1 bra BB6_12;
+bra.uni BB6_11;
+
+BB6_11:
+cvta.to.global.u64 %rd25, %rd8;
+ld.shared.u32 %r34, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62848_31_non_const_local_q_tail];
+atom.global.add.u32 %r35, [%rd25], %r34;
+st.shared.u32 [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62851_31_non_const_shift], %r35;
+
+BB6_12:
+bar.sync 0;
+ld.shared.u32 %r14, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62848_31_non_const_local_q_tail];
+setp.ge.s32	%p9, %r39, %r14;
+@%p9 bra BB6_15;
+
+cvta.to.global.u64 %rd5, %rd7;
+ld.shared.u32 %r15, [_Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62851_31_non_const_shift];
+mov.u32 %r16, %ntid.x;
+
+BB6_14:
+mul.wide.s32 %rd26, %r39, 4;
+mov.u64 %rd27, _Z10BFS_kernelPiS_P4int2S1_S_S_iS_ii$__cuda_local_var_62849_31_non_const_local_q;
+add.s64 %rd28, %rd27, %rd26;
+ld.shared.u32 %r36, [%rd28];
+add.s32 %r37, %r15, %r39;
+mul.wide.s32 %rd29, %r37, 4;
+add.s64 %rd30, %rd5, %rd29;
+st.global.u32 [%rd30], %r36;
+add.s32 %r39, %r16, %r39;
+setp.lt.s32	%p10, %r39, %r14;
+@%p10 bra BB6_14;
+
+BB6_15:
+ret;
+}
+
+
