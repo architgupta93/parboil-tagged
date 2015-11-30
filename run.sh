@@ -6,5 +6,5 @@ export LOGS_DIR=$PARBOIL_DIR/logs
 cp gpgpu-sim/* benchmarks/bfs/build/cuda_default/
 pushd benchmarks/bfs/build/cuda_default/
 export dateNow=`date +%Y-%m-%d--%H-%M`
-./bfs $DATASET_DIR/bfs/NY/input/graph_input.dat > $dateNow--bfs.log
+./bfs $DATASET_DIR/bfs/NY/input/graph_input.dat > $LOGS_DIR/$dateNow--bfs.log
 
