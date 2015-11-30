@@ -1,4 +1,0 @@
-#!	/bin/bash
-
-./parboil clean bfs base
-./parboil compile bfs base
