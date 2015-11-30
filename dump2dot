@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# (C) 2005 Free Software Foundation
+# Contributed by Diego Novillo <dnovillo@redhat.com>.
+#
+# This script is Free Software, and it can be copied, distributed and
+# modified as defined in the GNU General Public License.  A copy of
+# its license can be downloaded from http://www.gnu.org/copyleft/gpl.html
+
+if [ "$1" = "" ] ; then
+    echo "usage: $0 file"
+    echo
+    echo "Generates a GraphViz .dot graph file from 'file'."
+    echo "It assumes that 'file' has been generated with -fdump-tree-...-blocks"
+    echo
+    exit 1
+fi
+
+file=$1
+out=$file.dot
+echo "digraph cfg {"		> $out
+echo "	node [shape=box]"	>>$out
+echo '	size="11,8.5"'		>>$out
+echo 				>>$out
+(grep -E '# BLOCK|# PRED:|# SUCC:' $file |				\
+	sed -e 's:\[\([0-9\.%]*\)*\]::g;s:([a-z_,]*)::g' |		\
+	awk '{	#print $0;						\
+		if ($2 == "BLOCK")					\
+		    {							\
+			bb = $3;					\
+			print "\t", bb, "[label=\"", bb, "\", style=filled, color=gray]";		\
+		    }							\
+		else if ($2 == "PRED:")					\
+		    {							\
+			for (i = 3; i <= NF; i++)			\
+			    print "\t", $i, "->", bb, ";";		\
+		    }							\
+	    }')			>> $out
+echo "}"			>> $out
