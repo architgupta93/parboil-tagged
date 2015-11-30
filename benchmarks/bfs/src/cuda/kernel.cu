@@ -253,8 +253,10 @@ BFS_in_GPU_kernel(int *q1,
 
     __asm__("INTRN7:");
     if(tot_sum == 0)//the new frontier becomes empty; BFS is over
+    {  
       __asm__("INTRN7a:");
       return;
+    }
     __asm__("EXTRN8:");
     if(tot_sum <= MAX_THREADS_PER_BLOCK){
       //the new frontier is still within one-block limit;
