@@ -17,7 +17,7 @@ CUDACC=$(CUDAHOME)/bin/nvcc
 CUDALINK=$(CUDAHOME)/bin/nvcc
 
 # Flags
-PLATFORM_CUDACFLAGS=-ccbin gcc-4.5.4 -gencode arch=compute_11,code=compute_11
+PLATFORM_CUDACFLAGS=-ccbin gcc-4.5.4 -gencode arch=compute_13,code=compute_13
 PLATFORM_CUDALDFLAGS=-lm -lpthread
 
 

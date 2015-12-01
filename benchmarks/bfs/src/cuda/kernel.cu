@@ -72,11 +72,11 @@ struct LocalQueues {
     // Queue may be accessed concurrently, so
     // use an atomic operation to reserve a queue index.
     int tail_index = atomicAdd(&tail[index], 1);
-    __asm__("EXTRN01:");
+    __asm__("EXTRN:");
     if (tail_index >= W_QUEUE_SIZE)
     {
       *overflow = 1;
-    __asm__("EXTRN02:");
+    __asm__("EXTRN:");
     }
     else
       elems[index][tail_index] = value;
@@ -94,10 +94,10 @@ struct LocalQueues {
   // The total number of elements is returned.
   __device__ int size_prefix_sum(int (&prefix_q)[NUM_BIN]) {
     prefix_q[0] = 0;
-    __asm__("EXTRN03:");
+    __asm__("EXTRN:");
     for(int i = 1; i < NUM_BIN; i++){
       prefix_q[i] = prefix_q[i-1] + tail[i-1];
-    __asm__("EXTRN04:");
+    __asm__("EXTRN:");
     }
     return prefix_q[NUM_BIN-1] + tail[NUM_BIN-1];
   }
@@ -117,7 +117,7 @@ struct LocalQueues {
       //multiple threads are copying elements at the same time,
       //so we shift by multiple elements for next iteration  
       local_shift += sharers[q_i];
-    __asm__("EXTRN05:");
+    __asm__("EXTRN:");
     }
   }
 };
@@ -131,12 +131,12 @@ volatile __device__ int stay_vol = 0;
 __device__ void start_global_barrier(int fold){
   __syncthreads();
 
-  __asm__("EXTRN06:");
+  __asm__("EXTRN:");
   if(threadIdx.x == 0){
     atomicAdd((int*)&count, 1);
     while( count < NUM_SM*fold){
       ;
-    __asm__("EXTRN07:");
+    __asm__("EXTRN:");
     }
   }
   __syncthreads();
@@ -164,7 +164,7 @@ visit_node(int pid,
   Node cur_node = tex1Dfetch(g_graph_node_ref,pid);
 
   // For each outgoing edge
-  __asm__("INTRN1:");
+  __asm__("INTRN:");
   for(int i = cur_node.x; i < cur_node.y + cur_node.x; i++) {
     Edge cur_edge = tex1Dfetch(g_graph_edge_ref,i);
     int id = cur_edge.x;
@@ -174,17 +174,17 @@ visit_node(int pid,
 
     // If this outgoing edge makes a shorter path than any previously
     // discovered path
-    __asm__("INTRN2:");
+    __asm__("INTRN:");
     if(orig_cost > cost){
       int old_color = atomicExch(&g_color[id],gray_shade);
-      __asm__("INTRN3:");
+      __asm__("INTRN:");
       if(old_color != gray_shade) {
 	//push to the queue
-        __asm__("INTRN4:");
+        __asm__("INTRN:");
 	local_q.append(index, overflow, id);
       }
     }
-    __asm__("INTRN4:");
+    __asm__("INTRN:");
   }
 }
 
@@ -216,25 +216,25 @@ BFS_in_GPU_kernel(int *q1,
   //next/new wave front
   __shared__ int next_wf[MAX_THREADS_PER_BLOCK];
   __shared__ int  tot_sum;
-  __asm__("EXTRN1:");
+  __asm__("EXTRN:");
   if(threadIdx.x == 0)	
     tot_sum = 0;//total number of new frontier nodes
   while(1){//propage through multiple BFS levels until the wavfront overgrows one-block limit
-    __asm__("EXTRN2:");
+    __asm__("EXTRN:");
     if(threadIdx.x < NUM_BIN){
       local_q.reset(threadIdx.x, blockDim);
     }
     __syncthreads();
     int tid = blockIdx.x*MAX_THREADS_PER_BLOCK + threadIdx.x;
-    __asm__("EXTRN3:");
+    __asm__("EXTRN:");
     if( tid<no_of_nodes)
     {
       int pid;
-      __asm__("INTRN4:");
+      __asm__("INTRN:");
       if(tot_sum == 0)//this is the first BFS level of current kernel call
       {
         pid = q1[tid];  
-      __asm__("INTRN5:");
+      __asm__("INTRN:");
       }
       else
         pid = next_wf[tid];//read the current frontier info from last level's propagation
@@ -245,45 +245,45 @@ BFS_in_GPU_kernel(int *q1,
 		 g_color, g_cost, gray_shade);
     }
     __syncthreads();
-    __asm__("EXTRN6:");
+    __asm__("EXTRN:");
     if(threadIdx.x == 0){
       *tail = tot_sum = local_q.size_prefix_sum(prefix_q);
     }
     __syncthreads();
 
-    __asm__("INTRN7:");
+    __asm__("INTRN:");
     if(tot_sum == 0)//the new frontier becomes empty; BFS is over
     {  
-      __asm__("INTRN7a:");
+      __asm__("INTRN:");
       return;
     }
-    __asm__("EXTRN8:");
+    __asm__("EXTRN:");
     if(tot_sum <= MAX_THREADS_PER_BLOCK){
       //the new frontier is still within one-block limit;
       //stay in current kernel
-      __asm__("EXTRN8a:");
+      __asm__("EXTRN:");
       local_q.concatenate(next_wf, prefix_q);
       __syncthreads();
       no_of_nodes = tot_sum;
-      __asm__("EXTRN9:");
+      __asm__("EXTRN:");
       if(threadIdx.x == 0){
-        __asm__("INTRN10:");
+        __asm__("INTRN:");
         if(gray_shade == GRAY0)
         {
 	  gray_shade = GRAY1;
-        __asm__("INTRN11:");
+        __asm__("INTRN:");
 	}
         else
           gray_shade = GRAY0;
       }
-      __asm__("EXTRN12:");
+      __asm__("EXTRN:");
     }
     else{
       //the new frontier outgrows one-block limit; terminate current kernel
       local_q.concatenate(q2, prefix_q);
       return;
     }
-  __asm__("EXTRN13:");
+  __asm__("EXTRN:");
   }//while
 
 }	
@@ -324,26 +324,26 @@ BFS_kernel_multi_blk_inGPU(int *q1,
   __shared__ int shift;
   __shared__ int no_of_nodes_sm;
   __shared__ int odd_time;// the odd level of propagation within current kernel
-  __asm__("EXTRN1:");
+  __asm__("EXTRN:");
   if(threadIdx.x == 0){
     odd_time = 1;//true;
-    __asm__("EXTRN2:");
+    __asm__("EXTRN:");
     if(blockIdx.x == 0)
       no_of_nodes_vol = *no_of_nodes;
   }
   int kt = atomicOr(global_kt,0);// the total count of GPU global synchronization 
   while (1){//propagate through multiple levels
-    __asm__("EXTRN4:");
+    __asm__("EXTRN:");
     if(threadIdx.x < NUM_BIN){
       local_q.reset(threadIdx.x, blockDim);
     }
-    __asm__("EXTRN5:");
+    __asm__("EXTRN:");
     if(threadIdx.x == 0)
       no_of_nodes_sm = no_of_nodes_vol; 
     __syncthreads();
 
     int tid = blockIdx.x*MAX_THREADS_PER_BLOCK + threadIdx.x;
-    __asm__("EXTRN6:");
+    __asm__("EXTRN:");
     if( tid<no_of_nodes_sm)
     {
       // Read a node ID from the current input queue
@@ -358,7 +358,7 @@ BFS_kernel_multi_blk_inGPU(int *q1,
     __syncthreads();
 
     // Compute size of the output and allocate space in the global queue
-    __asm__("EXTRN7:");
+    __asm__("EXTRN:");
     if(threadIdx.x == 0){
       int tot_sum = local_q.size_prefix_sum(prefix_q);
       shift = atomicAdd(tail, tot_sum);
@@ -369,14 +369,14 @@ BFS_kernel_multi_blk_inGPU(int *q1,
     int *output_queue = odd_time ? q2 : q1;
     local_q.concatenate(output_queue + shift, prefix_q);
 
-    __asm__("EXTRN8:");
+    __asm__("EXTRN:");
     if(threadIdx.x == 0){
       odd_time = (odd_time+1)%2;
-      __asm__("INTRN9:");
+      __asm__("INTRN:");
       if(gray_shade == GRAY0)
       {
 	gray_shade = GRAY1;
-      __asm__("INTRN10:");
+      __asm__("INTRN:");
       }
       else
         gray_shade = GRAY0;
@@ -384,11 +384,11 @@ BFS_kernel_multi_blk_inGPU(int *q1,
 
     //synchronize among all the blks
     start_global_barrier(kt+1);
-    __asm__("EXTRN11:");
-    __asm__("EXTRN12:");
+    __asm__("EXTRN:");
+    __asm__("EXTRN:");
     if(blockIdx.x == 0 && threadIdx.x == 0){
       stay_vol = 0;
-      __asm__("EXTRN13:");
+      __asm__("EXTRN:");
       if(*tail< NUM_SM*MAX_THREADS_PER_BLOCK && *tail > MAX_THREADS_PER_BLOCK){
         stay_vol = 1;
         no_of_nodes_vol = *tail;
@@ -397,11 +397,11 @@ BFS_kernel_multi_blk_inGPU(int *q1,
     }
     start_global_barrier(kt+2);
     kt+= 2;
-    __asm__("EXTRN14:");
+    __asm__("EXTRN:");
     if(stay_vol == 0)
     {
-      __asm__("EXTRN15:");
-      __asm__("EXTRN16:");
+      __asm__("EXTRN:");
+      __asm__("EXTRN:");
       if(blockIdx.x == 0 && threadIdx.x == 0)
       {
         *global_kt = kt;
@@ -410,7 +410,7 @@ BFS_kernel_multi_blk_inGPU(int *q1,
       }
       return;
     }
-  __asm__("EXTRN3:");
+  __asm__("EXTRN:");
   }
 }
 
@@ -445,7 +445,7 @@ BFS_kernel(int *q1,
   //current w-queue, a.k.a prefix sum
   __shared__ int shift;
 
-  __asm__("EXTRN1:");
+  __asm__("EXTRN:");
   if(threadIdx.x < NUM_BIN){
     local_q.reset(threadIdx.x, blockDim);
   }
@@ -453,7 +453,7 @@ BFS_kernel(int *q1,
 
   //first, propagate and add the new frontier elements into w-queues
   int tid = blockIdx.x*MAX_THREADS_PER_BLOCK + threadIdx.x;
-  __asm__("EXTRN2:");
+  __asm__("EXTRN:");
   if( tid < no_of_nodes)
   {
     // Visit a node from the current frontier; update costs, colors, and
@@ -464,7 +464,7 @@ BFS_kernel(int *q1,
   __syncthreads();
 
   // Compute size of the output and allocate space in the global queue
-  __asm__("EXTRN3:");
+  __asm__("EXTRN:");
   if(threadIdx.x == 0){
     //now calculate the prefix sum
     int tot_sum = local_q.size_prefix_sum(prefix_q);
