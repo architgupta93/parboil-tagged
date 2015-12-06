@@ -1,9 +1,6 @@
 #  !/bin/bash
-PARBOIL_DIR='/home/ag/bigdata/2_Gpgpu_Architecture/parboil'
-DATASET_DIR=$PARBOIL_DIR/datasets
-RODINIA_DATA='/home/ag/bigdata/2_Gpgpu_Architecture/rodinia_3.0/data/bfs/graph4096.txt'
-LOGS_DIR=$PARBOIL_DIR/logs
-RESULTS_DIR=$PARBOIL_DIR/output
+
+source make.config
 
 EXE='0'
 for key in $@
@@ -35,7 +32,7 @@ then
 	mkdir -p $RESULTS_DIR
 	mkdir -p $LOGS_DIR/bfs
 	#./bfs -i $DATASET_DIR/bfs/NY/input/graph_input.dat > $LOGS_DIR/$dateNow--bfs.log
-	./bfs -i $RODINIA_DATA -o $RESULTS_DIR/bfs/$dateNow--result.log > $LOGS_DIR/$dateNow--bfs.log
+	./bfs -i $RODINIA_DATA -o $RESULTS_DIR/bfs/$dateNow--result.log > $LOGS_DIR/bfs/$dateNow--bfs.log
 	popd
 fi
 
