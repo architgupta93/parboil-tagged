@@ -17,6 +17,8 @@ do
 			;;
 		-c | --clean)
 			./parboil clean bfs
+			rm -rf logs/*
+			rm -rf output/*
 			;;
 		-l | --clear-logs)
 			rm $LOGS_DIR/*
@@ -29,6 +31,9 @@ done
 if [ $EXE -ne "0" ];
 then
 	export dateNow=`date +%Y-%m-%d--%H-%M`
+	mkdir -p $LOGS_DIR
+	mkdir -p $RESULTS_DIR
+	mkdir -p $LOGS_DIR/bfs
 	#./bfs -i $DATASET_DIR/bfs/NY/input/graph_input.dat > $LOGS_DIR/$dateNow--bfs.log
 	./bfs -i $RODINIA_DATA -o $RESULTS_DIR/bfs/$dateNow--result.log > $LOGS_DIR/$dateNow--bfs.log
 	popd
