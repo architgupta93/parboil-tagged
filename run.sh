@@ -1,5 +1,4 @@
 #  !/bin/bash
-
 source make.config
 
 EXE='0'
