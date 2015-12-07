@@ -8,6 +8,9 @@ __global__ void spmv_jds(float *dst_vector,
 {
 	int ix=blockIdx.x*blockDim.x+threadIdx.x;
 	int warp_id=ix>>WARP_BITS;
+	__asm__("EXTRN:");	//extrinsic,
+	//only execute if the data is less than dimension of
+	//matrix/vector
 	if(ix<dim)
 	{
 		float sum=0.0f;
@@ -17,7 +20,10 @@ __global__ void spmv_jds(float *dst_vector,
 		float d = d_data[j]; 
 		int i = d_index[j];  
 		float t = x_vec[i];
-		
+	
+		__asm__("INTRN:");	//only execute if
+		//this row has more than 1 non-zero entries
+		//TODO: not understood well	
 		if (bound>1)  //bound >=2
 		{
 			//prefetch 1
@@ -26,6 +32,10 @@ __global__ void spmv_jds(float *dst_vector,
 			int in;
 			float dn;
 			float tn;
+			__asm__("INTRN:");	//TODO: unclear
+			//because do the iterative computation
+			//for each non-zero element in this sparse
+			//row, 
 			for(int k=2;k<bound;k++ )
 			{	
 				//prefetch k-1
@@ -43,6 +53,8 @@ __global__ void spmv_jds(float *dst_vector,
 				//sweep to k-1
 				d = dn;
 				t =tn; 
+			__asm__("INTRN:");	//TODO: unclear, end of for
+			//end of for
 			}	
 		
 			//fetch last
