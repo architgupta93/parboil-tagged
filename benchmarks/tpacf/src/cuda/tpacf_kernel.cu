@@ -65,16 +65,26 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
   
   __shared__ unsigned int 
     warp_hists[NUM_BINS][NUM_HISTOGRAMS]; // 640B <1k  
-    
+   
+	//initialize all warp_hists block
+	//initialization is intrinsic by default
+	__asm__("INTRN:");	 
   for(unsigned int w = 0; w < NUM_BINS*NUM_HISTOGRAMS; w += BLOCK_SIZE )
     {
+	__asm__("INTRN:");	 
       if(w+tid < NUM_BINS*NUM_HISTOGRAMS)
 	{
 	  warp_hists[(w+tid)/NUM_HISTOGRAMS][(w+tid)%NUM_HISTOGRAMS] = 0;
 	}
+	__asm__("INTRN:");	 
     }
     
-  // Get stuff into shared memory to kick off the loop.
+
+ // Get stuff into shared memory to kick off the loop.
+
+	//Again: data structure initialization based on 
+	//thread id. This is intrinsic
+	__asm__("INTRN:");	 
   if( !do_self)
     {
       data_x = all_x_data;
@@ -84,6 +94,7 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
       random_y = all_y_data + NUM_ELEMENTS * (bx - NUM_SETS);
       random_z = all_z_data + NUM_ELEMENTS * (bx - NUM_SETS);
     }
+	__asm__("INTRN:");	 
   else
     {
       random_x = all_x_data + NUM_ELEMENTS * (bx);
@@ -96,10 +107,13 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
     }
     
   // Iterate over all data points
+	__asm__("EXTRN:");	//data bound check, extrinsic
+	//This for loops is a data loading loop
   for(unsigned int i = 0; i < NUM_ELEMENTS; i += BLOCK_SIZE )
     {
       // load current set of data into shared memory
       // (total of BLOCK_SIZE points loaded)
+	__asm__("EXTRN:");	//data bound check, extrinsic	
       if( tid + i < NUM_ELEMENTS )
 	{ // reading outside of bounds is a-okay
 	  data_s[tid] = (struct cartesian)
@@ -109,6 +123,9 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
       __syncthreads();
 
       // Iterate over all random points
+
+	//TODO: Conditional statement in for initialization
+	__asm__("EXTRN:");	//data bound check, extrinsic	
       for(unsigned int j = (do_self ? i+1 : 0); j < NUM_ELEMENTS; 
 	  j += BLOCK_SIZE)
 	{
@@ -117,6 +134,7 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
 	  REAL random_y_s;
 	  REAL random_z_s;
 	  
+	__asm__("EXTRN:");	//data bound check, extrinsic	
 	  if(tid + j < NUM_ELEMENTS)
 	    {
 	      random_x_s = random_x[tid + j];
@@ -128,6 +146,9 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
 	  // (BLOCK_SIZE iterations per thread)
 	  // Each thread calcs against 1 random point within cur set of random
 	  // (so BLOCK_SIZE threads covers all random points within cur set)
+	//TODO: check tow cconsitions in for
+	__asm__("EXTRN:");	//data bound check, extrinsic	
+	__asm__("EXTRN:");	//data bound check, extrinsic	
 	  for(unsigned int k = 0; 
 	      (k < BLOCK_SIZE) && (k+i < NUM_ELEMENTS);
 	      k += 1)
@@ -143,48 +164,79 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
 	      // run binary search to find bin_index
 	      unsigned int min = 0;
 	      unsigned int max = NUM_BINS;
+		//binary search, all branches intrinsic
 	      {
 		unsigned int k2;
-	      
+	      	
+		__asm__("INTRN:");	//TODO: (Check) for the while
 		while (max > min+1)
 		  {
 		    k2 = (min + max) / 2;
+			__asm__("INTRN:");//if
 		    if (distance >= dev_binb[k2]) 
 		      max = k2;
+			__asm__("INTRN:");//else
 		    else 
 		      min = k2;
+		__asm__("INTRN:");	//for the while
 		  }
 		bin_index = max - 1;
 	      }
 
 	      unsigned int warpnum = tid / (WARP_SIZE/HISTS_PER_WARP);
-	      if((distance < dev_binb[min]) && (distance >= dev_binb[max]) && 
-		 (!do_self || (tid + j > i + k)) && (tid + j < NUM_ELEMENTS))
+		//TODO; complicated if statement
+		__asm__("INTRN:");
+		__asm__("INTRN:");
+		__asm__("INTRN:");
+		__asm__("INTRN:");
+		__asm__("EXTRN:");
+	      if((distance < dev_binb[min]) &&	//intrinsic 
+		(distance >= dev_binb[max]) && 	//intrinsic
+		//TODO: check if or creates 2 conditions
+		(!do_self || 			//intrinsic
+		(tid + j > i + k)) && 		//intrinsic
+		(tid + j < NUM_ELEMENTS))	//extrinsic
 		{
 		  atomicAdd(&warp_hists[bin_index][warpnum], 1U);
 		}
+		//TODO: check two consitions for for
+		__asm__("EXTRN:");	//data bound check, extrinsic	
+		__asm__("EXTRN:");	//data bound check, extrinsic	
 	    }
+	__asm__("EXTRN:");	//end of for/data bound check, extrinsic	
 	}
+	__asm__("EXTRN:");	//end of first for, 	
+				//data bound check, extrinsic
     }
     
   // coalesce the histograms in a block
   unsigned int warp_index = tid & ( (NUM_HISTOGRAMS>>1) - 1);
   unsigned int bin_index = tid / (NUM_HISTOGRAMS>>1);
+	__asm__("INTRN:");	//intrinsic because
+	//the loop must continue until the offset is nil
   for(unsigned int offset = NUM_HISTOGRAMS >> 1; offset > 0; 
       offset >>= 1)
     {
+	__asm__("EXTRN:")	//data bound check
       for(unsigned int bin_base = 0; bin_base < NUM_BINS; 
 	  bin_base += BLOCK_SIZE/ (NUM_HISTOGRAMS>>1))
 	{
 	  __syncthreads();
-	  if(warp_index < offset && bin_base+bin_index < NUM_BINS )
+
+		__asm__("INTRN:");	//check if the current
+		//warp is meant to fill this bin of historgram
+		__asm__("EXTRN:");	//data bound check	
+	  if(warp_index < offset 	//intrinsic
+		&& bin_base+bin_index < NUM_BINS )	//extrinsic
 	    {
 	      unsigned long sum =
 		warp_hists[bin_base + bin_index][warp_index] + 
 		warp_hists[bin_base + bin_index][warp_index+offset];
 	      warp_hists[bin_base + bin_index][warp_index] = sum;
 	    }
+	__asm__("EXTRN:")	//end of for, data bound check
 	}
+	__asm__("INTRN:");	//end of previous for, intrinsic
     }
     
   __syncthreads();
@@ -192,6 +244,9 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
   // Put the results back in the real histogram
   // warp_hists[x][0] holds sum of all locations of bin x
   hist_t* hist_base = histograms + NUM_BINS * bx;
+	__asm__("EXTRN:");	//bound check on number of BINS
+				//i.e. no. of pillars in histogram
+				//extrinsic
   if(tid < NUM_BINS)
     {
       hist_base[tid] = warp_hists[tid][0];
