@@ -15,7 +15,7 @@ __global__ void block2D_hybrid_coarsen_x(float c0,float c1,float *A0,float *Anex
 	//thread coarsening along x direction
 	const int i = blockIdx.x*blockDim.x*2+threadIdx.x;
 	const int i2= blockIdx.x*blockDim.x*2+threadIdx.x+blockDim.x;
-    const int j = blockIdx.y*blockDim.y+threadIdx.y;
+    	const int j = blockIdx.y*blockDim.y+threadIdx.y;
 	const int sh_id=threadIdx.x + threadIdx.y*blockDim.x*2;
 	const int sh_id2=threadIdx.x +blockDim.x+ threadIdx.y*blockDim.x*2;
 	
@@ -38,12 +38,16 @@ __global__ void block2D_hybrid_coarsen_x(float c0,float c1,float *A0,float *Anex
 	float bottom=0.0f,bottom2=0.0f,top=0.0f,top2=0.0f;
 	
 	//load data for bottom and current 
+	__asm__("EXTRN:");	//check that the threads are within
+	__asm__("EXTRN:");	//data bounds, extrinsic by definition
 	if((i<nx) &&(j<ny))
 	{
 
 		bottom=A0[Index3D (nx, ny, i, j, 0)];
 		sh_A0[sh_id]=A0[Index3D (nx, ny, i, j, 1)];
 	}
+	__asm__("EXTRN:");	//check that the threads are within
+	__asm__("EXTRN:");	//data bounds, extrinsic by definition
 	if((i2<nx) &&(j<ny))
 	{
 		bottom2=A0[Index3D (nx, ny, i2, j, 0)];
@@ -52,6 +56,9 @@ __global__ void block2D_hybrid_coarsen_x(float c0,float c1,float *A0,float *Anex
 
 	__syncthreads();
 	
+	__asm__("INTRN:");	//MAPPABLE: this is intrinsic
+				//the layer by layer computation must 
+				//be done in this cmapping	
 	for(int k=1;k<nz-1;k++)
 	{
 
@@ -60,28 +67,36 @@ __global__ void block2D_hybrid_coarsen_x(float c0,float c1,float *A0,float *Anex
 		//load required data on xy planes
 		//if it on shared memory, load from shared memory
 		//if not, load from global memory
+		__asm__("EXTRN:");	//check that the threads are within
+		__asm__("EXTRN:");	//data bounds, extrinsic by definition
 		if((i<nx) &&(j<ny))
 			top=A0[Index3D (nx, ny, i, j, k+1)];
 			
+		__asm__("INTRN:");	//intrinsic as this works only for non-boundary points	
 		if(w_region)
 		{
+			//TODO: not sure if this is compiled to a branch
 			a_up        =y_h_bound?A0[Index3D (nx, ny, i, j+1, k )]:sh_A0[sh_id+2*blockDim.x];
-      a_down      =y_l_bound?A0[Index3D (nx, ny, i, j-1, k )]:sh_A0[sh_id-2*blockDim.x];
+      			a_down      =y_l_bound?A0[Index3D (nx, ny, i, j-1, k )]:sh_A0[sh_id-2*blockDim.x];
 			a_left_right=x_l_bound?A0[Index3D (nx, ny, i-1, j, k )]:sh_A0[sh_id-1];
 	
 			Anext[Index3D (nx, ny, i, j, k)] = (top + bottom + a_up + a_down + sh_A0[sh_id+1] +a_left_right)*c1
                                         -  sh_A0[sh_id]*c0;		
-    }
+    		}
 		
 		
 		//load another block 
+		__asm__("EXTRN:");	//check that the threads are within
+		__asm__("EXTRN:");	//data bounds, extrinsic by definition
 		if((i2<nx) &&(j<ny))
 			top2=A0[Index3D (nx, ny, i2, j, k+1)];
 			
+		__asm__("INTRN:");	//intrinsic as this works only for non-boundary points	
 		if(w_region2)
 		{
-		  a_up        =y_h_bound?A0[Index3D (nx, ny, i2, j+1, k )]:sh_A0[sh_id2+2*blockDim.x];
-      a_down      =y_l_bound?A0[Index3D (nx, ny, i2, j-1, k )]:sh_A0[sh_id2-2*blockDim.x];
+			//TODO: not sure if this is compiled to a branch
+		  	a_up        =y_h_bound?A0[Index3D (nx, ny, i2, j+1, k )]:sh_A0[sh_id2+2*blockDim.x];
+      			a_down      =y_l_bound?A0[Index3D (nx, ny, i2, j-1, k )]:sh_A0[sh_id2-2*blockDim.x];
 			a_left_right=x_h_bound?A0[Index3D (nx, ny, i2+1, j, k )]:sh_A0[sh_id2+1];
 
 			
@@ -96,6 +111,7 @@ __global__ void block2D_hybrid_coarsen_x(float c0,float c1,float *A0,float *Anex
 		bottom2=sh_A0[sh_id2];
 		sh_A0[sh_id2]=top2;
 		__syncthreads();
+	__asm__("INTRN:");	//MAPPABLE: end of for
 	}
 
 
