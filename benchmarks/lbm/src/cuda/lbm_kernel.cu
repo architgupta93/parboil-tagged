@@ -52,6 +52,7 @@ __global__ void performStreamCollide_kernel( float* srcGrid, float* dstGrid )
 	tempWB = SRC_WB(srcGrid);
 
 	//Test whether the cell is fluid or obstacle
+	__asm__("INTRN:");	//obviously check, internal
 	if( TEST_FLAG_SWEEP( srcGrid, OBSTACLE )) {
 		//Swizzle the inputs: reflect any fluid coming into this cell 
 		// back to where it came from
@@ -65,6 +66,7 @@ __global__ void performStreamCollide_kernel( float* srcGrid, float* dstGrid )
 		temp_swp = tempET ; tempET= tempWB ; tempWB = temp_swp;
 		temp_swp = tempEB ; tempEB = tempWT ; tempWT = temp_swp;
 	}
+	__asm__("INTRN:");	//obviously check if statement, internal
 	else {
                 //The math meat of LBM: ignore for optimization
 	        float ux, uy, uz, rho, u2;
@@ -99,6 +101,8 @@ __global__ void performStreamCollide_kernel( float* srcGrid, float* dstGrid )
 		ux /= rho;
 		uy /= rho;
 		uz /= rho;
+		__asm__("INTRN:");	//obvious cell type check,
+					//if empty space
 		if( TEST_FLAG_SWEEP( srcGrid, ACCEL )) {
 			ux = 0.005f;
 			uy = 0.002f;
