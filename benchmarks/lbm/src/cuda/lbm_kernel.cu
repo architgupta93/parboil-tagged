@@ -65,8 +65,8 @@ __global__ void performStreamCollide_kernel( float* srcGrid, float* dstGrid )
 		temp_swp = tempNB ; tempNB = tempST ; tempST = temp_swp;
 		temp_swp = tempET ; tempET= tempWB ; tempWB = temp_swp;
 		temp_swp = tempEB ; tempEB = tempWT ; tempWT = temp_swp;
-	}
 	__asm__("INTRN:");	//obviously check if statement, internal
+	}
 	else {
                 //The math meat of LBM: ignore for optimization
 	        float ux, uy, uz, rho, u2;

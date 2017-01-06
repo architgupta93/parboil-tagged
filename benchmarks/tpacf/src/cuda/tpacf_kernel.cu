@@ -93,8 +93,8 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
       random_x = all_x_data + NUM_ELEMENTS * (bx - NUM_SETS);
       random_y = all_y_data + NUM_ELEMENTS * (bx - NUM_SETS);
       random_z = all_z_data + NUM_ELEMENTS * (bx - NUM_SETS);
+      __asm__("INTRN:");	 
     }
-	__asm__("INTRN:");	 
   else
     {
       random_x = all_x_data + NUM_ELEMENTS * (bx);
@@ -174,11 +174,13 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
 		    k2 = (min + max) / 2;
 			__asm__("INTRN:");//if
 		    if (distance >= dev_binb[k2]) 
-		      max = k2;
+		    {  max = k2;
 			__asm__("INTRN:");//else
+		    }
 		    else 
-		      min = k2;
-		__asm__("INTRN:");	//for the while
+		    {  min = k2;
+		       __asm__("INTRN:");	//for the while
+		    }
 		  }
 		bin_index = max - 1;
 	      }
@@ -217,7 +219,7 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
   for(unsigned int offset = NUM_HISTOGRAMS >> 1; offset > 0; 
       offset >>= 1)
     {
-	__asm__("EXTRN:")	//data bound check
+	__asm__("EXTRN:");	//data bound check
       for(unsigned int bin_base = 0; bin_base < NUM_BINS; 
 	  bin_base += BLOCK_SIZE/ (NUM_HISTOGRAMS>>1))
 	{
@@ -234,7 +236,7 @@ void gen_hists( hist_t* histograms, REAL* all_x_data, REAL* all_y_data,
 		warp_hists[bin_base + bin_index][warp_index+offset];
 	      warp_hists[bin_base + bin_index][warp_index] = sum;
 	    }
-	__asm__("EXTRN:")	//end of for, data bound check
+	__asm__("EXTRN:");	//end of for, data bound check
 	}
 	__asm__("INTRN:");	//end of previous for, intrinsic
     }

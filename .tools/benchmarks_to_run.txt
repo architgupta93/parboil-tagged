@@ -1,0 +1,58 @@
+Since we don't have a lot of time left for the final submissions, we can 
+understand and run only a small subset of the benchmarks. Here is a list of 
+some of the easier algorithms in to rodinia benchmark:
+
+RODINIA
+
+d1.  b+trees
+d2.  backprop
+d3.  bfs
+d4.  gaussian
+5.  dwt -- SD
+6.  hotspot -- SD
+7.  hybridsort -- AG
+8.  kmeans -- SD
+9.  lavaMD -- AG
+d10. lud
+11. nn -- SD
+12. pathfinder -- SD
+13. srad_v2 -- SD
+14. streamcluster -- SD 
+
+PARBOIL
+
+d1. bfs
+d2. lbm
+3. mri-q -- AG
+d4. stencil
+5. sgemm -- AG
+d6. spmv
+d7. tpacf
+
+These ones are kind of hard, but still doable
+
+RODINIA:
+
+1. leukocyte
+2. nw - In this case, understanding the algorithm is harder than understanding
+the code
+3. particlefilter - naive implementation has around 700 lines of cuda code
+4. srad_v1 - too many cuda files (total 790 lines of code). v2 is doable
+
+PARBOIL:
+
+1. cutcp
+2. histo
+3. sad
+
+Everything else can't be done in the given timeframe. Reasons:
+
+RODINIA:
+
+1. mummergpu - 3786 lines of cuda code
+2. myocyte - 5333 lines of cuda code
+
+PARBOIL:
+
+1. mri-gridding - 1327 lines of code
+

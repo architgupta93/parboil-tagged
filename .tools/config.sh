@@ -1,0 +1,11 @@
+# !/bin/bash
+# DIRECTORY LOCATIONS USED IN RUN SCRIPTS
+
+RODINIA_DIR=/home/ag/bigdata/2_Gpgpu_Architecture/rodinia_3.0/cuda
+OUTPUT_DIR=$RODINIA_DIR/.output
+RUN_DIR=$RODINIA_DIR/.run
+LOGS_DIR=$RODINIA_DIR/.logs
+CONFIG_DIR=$RODINIA_DIR/.gpgpu_config_files
+TOOLS_DIR=$RODINIA_DIR/.tools
+DATASETS_DIR=$RODINIA_DIR/../data
+DEFAULT_STRING='default'

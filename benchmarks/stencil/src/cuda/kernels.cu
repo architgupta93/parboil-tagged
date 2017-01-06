@@ -76,8 +76,11 @@ __global__ void block2D_hybrid_coarsen_x(float c0,float c1,float *A0,float *Anex
 		if(w_region)
 		{
 			//TODO: not sure if this is compiled to a branch
+			__asm__("INTRN:");	//intrinsic as this works only for non-boundary points	
 			a_up        =y_h_bound?A0[Index3D (nx, ny, i, j+1, k )]:sh_A0[sh_id+2*blockDim.x];
+			__asm__("INTRN:");	//intrinsic as this works only for non-boundary points	
       			a_down      =y_l_bound?A0[Index3D (nx, ny, i, j-1, k )]:sh_A0[sh_id-2*blockDim.x];
+			__asm__("INTRN:");	//intrinsic as this works only for non-boundary points	
 			a_left_right=x_l_bound?A0[Index3D (nx, ny, i-1, j, k )]:sh_A0[sh_id-1];
 	
 			Anext[Index3D (nx, ny, i, j, k)] = (top + bottom + a_up + a_down + sh_A0[sh_id+1] +a_left_right)*c1
@@ -95,8 +98,11 @@ __global__ void block2D_hybrid_coarsen_x(float c0,float c1,float *A0,float *Anex
 		if(w_region2)
 		{
 			//TODO: not sure if this is compiled to a branch
+			__asm__("INTRN:");	//intrinsic as this works only for non-boundary points	
 		  	a_up        =y_h_bound?A0[Index3D (nx, ny, i2, j+1, k )]:sh_A0[sh_id2+2*blockDim.x];
+			__asm__("INTRN:");	//intrinsic as this works only for non-boundary points	
       			a_down      =y_l_bound?A0[Index3D (nx, ny, i2, j-1, k )]:sh_A0[sh_id2-2*blockDim.x];
+			__asm__("INTRN:");	//intrinsic as this works only for non-boundary points	
 			a_left_right=x_h_bound?A0[Index3D (nx, ny, i2+1, j, k )]:sh_A0[sh_id2+1];
 
 			

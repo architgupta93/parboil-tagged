@@ -1,0 +1,234 @@
+
+
+
+
+
+
+
+.version 3.0
+.target sm_20
+.address_size 64
+
+.file	1 "/tmp/tmpxft_0000706c_00000000-7_bfs.cpp3.i"
+.file	2 "kernel.cu"
+.file	3 "kernel2.cu"
+
+.entry _Z6KernelP4NodePiPbS2_S2_S1_i(
+.param .u64 _Z6KernelP4NodePiPbS2_S2_S1_i_param_0,
+.param .u64 _Z6KernelP4NodePiPbS2_S2_S1_i_param_1,
+.param .u64 _Z6KernelP4NodePiPbS2_S2_S1_i_param_2,
+.param .u64 _Z6KernelP4NodePiPbS2_S2_S1_i_param_3,
+.param .u64 _Z6KernelP4NodePiPbS2_S2_S1_i_param_4,
+.param .u64 _Z6KernelP4NodePiPbS2_S2_S1_i_param_5,
+.param .u32 _Z6KernelP4NodePiPbS2_S2_S1_i_param_6
+)
+{
+.reg .pred %p<13>;
+.reg .s32 %r<25>;
+.reg .s64 %rl<33>;
+.reg .s16 %rc<5>;
+
+
+ld.param.u64 %rl1, [_Z6KernelP4NodePiPbS2_S2_S1_i_param_0];
+ld.param.u64 %rl2, [_Z6KernelP4NodePiPbS2_S2_S1_i_param_1];
+ld.param.u64 %rl3, [_Z6KernelP4NodePiPbS2_S2_S1_i_param_2];
+ld.param.u64 %rl4, [_Z6KernelP4NodePiPbS2_S2_S1_i_param_3];
+ld.param.u64 %rl5, [_Z6KernelP4NodePiPbS2_S2_S1_i_param_4];
+ld.param.u64 %rl6, [_Z6KernelP4NodePiPbS2_S2_S1_i_param_5];
+ld.param.u32 %r1, [_Z6KernelP4NodePiPbS2_S2_S1_i_param_6];
+.loc 2 24 1
+mov.u32 %r7, %ctaid.x;
+mov.u32 %r8, %tid.x;
+mad.lo.s32 %r2, %r7, 512, %r8;
+
+EXTRN1:
+	
+INTRN2:
+
+	.loc 2 27 1
+setp.lt.s32 %p4, %r2, %r1;
+not.pred %p5, %p4;
+mov.pred %p12, 0;
+.loc 2 27 1
+@%p5 bra BB0_2;
+
+cvt.s64.s32 %rl7, %r2;
+add.s64 %rl8, %rl3, %rl7;
+ld.u8 %rc1, [%rl8];
+{
+.reg .s16 %temp1;
+.reg .s16 %temp2;
+cvt.s16.s8 %temp1, %rc1;
+mov.b16 %temp2, 0;
+cvt.s16.s8 %temp2, %temp2;
+setp.ne.s16 %p12, %temp1, %temp2;
+}
+
+BB0_2:
+not.pred %p6, %p12;
+@%p6 bra BB0_10;
+
+.loc 2 29 1
+cvt.s64.s32 %rl9, %r2;
+add.s64 %rl10, %rl3, %rl9;
+mov.u16 %rc2, 0;
+.loc 2 29 1
+st.u8 [%rl10], %rc2;
+
+INTRN3:
+
+	.loc 2 32 1
+cvt.s64.s32 %rl11, %r2;
+shl.b64 %rl12, %rl11, 3;
+add.s64 %rl13, %rl1, %rl12;
+ld.u32 %r24, [%rl13];
+
+BB0_4:
+.loc 2 32 1
+cvt.s64.s32 %rl14, %r2;
+shl.b64 %rl15, %rl14, 3;
+add.s64 %rl16, %rl1, %rl15;
+ld.u32 %r12, [%rl16+4];
+cvt.s64.s32 %rl17, %r2;
+shl.b64 %rl18, %rl17, 3;
+add.s64 %rl19, %rl1, %rl18;
+ld.u32 %r14, [%rl19];
+add.s32 %r16, %r12, %r14;
+setp.lt.s32 %p7, %r24, %r16;
+not.pred %p8, %p7;
+@%p8 bra BB0_9;
+
+.loc 2 34 1
+cvt.s64.s32 %rl20, %r24;
+shl.b64 %rl21, %rl20, 2;
+add.s64 %rl22, %rl2, %rl21;
+ld.u32 %r5, [%rl22];
+
+INTRN4:
+
+	.loc 2 36 1
+cvt.s64.s32 %rl23, %r5;
+add.s64 %rl24, %rl5, %rl23;
+ld.u8 %rc3, [%rl24];
+{
+.reg .s16 %temp1;
+.reg .s16 %temp2;
+cvt.s16.s8 %temp1, %rc3;
+mov.b16 %temp2, 0;
+cvt.s16.s8 %temp2, %temp2;
+setp.ne.s16 %p9, %temp1, %temp2;
+}
+not.pred %p10, %p9;
+not.pred %p11, %p10;
+@%p11 bra BB0_7;
+
+.loc 2 38 1
+cvt.s64.s32 %rl25, %r2;
+shl.b64 %rl26, %rl25, 2;
+add.s64 %rl27, %rl6, %rl26;
+ld.u32 %r19, [%rl27];
+add.s32 %r21, %r19, 1;
+cvt.s64.s32 %rl28, %r5;
+shl.b64 %rl29, %rl28, 2;
+add.s64 %rl30, %rl6, %rl29;
+st.u32 [%rl30], %r21;
+.loc 2 39 1
+cvt.s64.s32 %rl31, %r5;
+add.s64 %rl32, %rl4, %rl31;
+mov.u16 %rc4, 1;
+.loc 2 39 1
+st.u8 [%rl32], %rc4;
+
+BB0_7:
+
+INTRN5:
+
+
+.loc 2 32 156
+add.s32 %r24, %r24, 1;
+bra.uni BB0_4;
+
+BB0_9:
+
+BB0_10:
+.loc 2 44 2
+ret;
+}
+
+.entry _Z7Kernel2PbS_S_S_i(
+.param .u64 _Z7Kernel2PbS_S_S_i_param_0,
+.param .u64 _Z7Kernel2PbS_S_S_i_param_1,
+.param .u64 _Z7Kernel2PbS_S_S_i_param_2,
+.param .u64 _Z7Kernel2PbS_S_S_i_param_3,
+.param .u32 _Z7Kernel2PbS_S_S_i_param_4
+)
+{
+.reg .pred %p<8>;
+.reg .s32 %r<10>;
+.reg .s64 %rl<13>;
+.reg .s16 %rc<4>;
+
+
+ld.param.u64 %rl1, [_Z7Kernel2PbS_S_S_i_param_0];
+ld.param.u64 %rl2, [_Z7Kernel2PbS_S_S_i_param_1];
+ld.param.u64 %rl3, [_Z7Kernel2PbS_S_S_i_param_2];
+ld.param.u64 %rl4, [_Z7Kernel2PbS_S_S_i_param_3];
+ld.param.u32 %r1, [_Z7Kernel2PbS_S_S_i_param_4];
+.loc 3 24 1
+mov.u32 %r3, %ctaid.x;
+mov.u32 %r4, %tid.x;
+mad.lo.s32 %r2, %r3, 512, %r4;
+
+EXTRN6:
+
+	
+INTRN7:
+
+	.loc 3 27 1
+setp.lt.s32 %p4, %r2, %r1;
+not.pred %p5, %p4;
+mov.pred %p7, 0;
+.loc 3 27 1
+@%p5 bra BB1_2;
+
+cvt.s64.s32 %rl5, %r2;
+add.s64 %rl6, %rl2, %rl5;
+ld.u8 %rc1, [%rl6];
+{
+.reg .s16 %temp1;
+.reg .s16 %temp2;
+cvt.s16.s8 %temp1, %rc1;
+mov.b16 %temp2, 0;
+cvt.s16.s8 %temp2, %temp2;
+setp.ne.s16 %p7, %temp1, %temp2;
+}
+
+BB1_2:
+not.pred %p6, %p7;
+@%p6 bra BB1_4;
+
+.loc 3 30 1
+cvt.s64.s32 %rl7, %r2;
+add.s64 %rl8, %rl1, %rl7;
+mov.u16 %rc2, 1;
+.loc 3 30 1
+st.u8 [%rl8], %rc2;
+.loc 3 31 1
+cvt.s64.s32 %rl9, %r2;
+add.s64 %rl10, %rl3, %rl9;
+st.u8 [%rl10], %rc2;
+.loc 3 32 1
+st.u8 [%rl4], %rc2;
+.loc 3 33 1
+cvt.s64.s32 %rl11, %r2;
+add.s64 %rl12, %rl2, %rl11;
+mov.u16 %rc3, 0;
+.loc 3 33 1
+st.u8 [%rl12], %rc3;
+
+BB1_4:
+.loc 3 35 2
+ret;
+}
+
+

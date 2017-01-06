@@ -1,0 +1,24 @@
+Testing file sanity... [Checking if atleast one kernel record is present]
+Kernel  found. Searching for more kernels
+make: 'parse' is up to date.
+------------------------------------------------------------------------------------------------
+          PC         TYPE       TARGET  INSTANCES        TAKEN       OCCUPANCY    DYN_COUNT
+------------------------------------------------------------------------------------------------
+          b0    extrinsic           e8      65536     0.937500        0.937500         2048
+         198    intrinsic          278      65536     0.000000        0.000000         2048
+         1e8    intrinsic          250     262144     0.765625        0.765625         8192
+         270    intrinsic          1b8     262144     0.750000        0.750000         8192
+         290    extrinsic          2a0      65536     0.062500        0.062500         2048
+         508    extrinsic          518      65536     0.000229        0.000244         2048
+------------------------------------------------------------------------------------------------
+          PC         TYPE       TARGET  INSTANCES        TAKEN       OCCUPANCY    DYN_COUNT
+------------------------------------------------------------------------------------------------
+           0    intrinsic         1234     589824     0.673611        0.673611        18432
+           0    extrinsic         abcd     196608     0.333410        0.333415         6144
+
+Thread-Slot-Stats:
+Active: 4112640, Extrinsic: 455040, Intrinsic: 259200
+
+Static branch stats
+extrinsic: 3, intrinsic: 3
+

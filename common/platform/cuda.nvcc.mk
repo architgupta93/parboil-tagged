@@ -13,11 +13,12 @@ include $(PARBOIL_ROOT)/common/platform/c.default.mk
 CUDAHOME=/home/ag/local/cuda-4.2
 
 # Programs
-CUDACC=$(CUDAHOME)/bin/nvcc
-CUDALINK=$(CUDAHOME)/bin/nvcc
+OPTIMIZ_FLAGS=-O0 -Xcicc -O0
+CUDACC=$(CUDAHOME)/bin/nvcc $(OPTIMIZ_FLAGS)
+CUDALINK=$(CUDAHOME)/bin/nvcc $(OPTIMIZ_FLAGS)
 
 # Flags
-PLATFORM_CUDACFLAGS=-ccbin gcc-4.5.4 -gencode arch=compute_13,code=compute_13
+PLATFORM_CUDACFLAGS=-ccbin gcc-4.5.4 -gencode arch=compute_20,code=compute_20
 PLATFORM_CUDALDFLAGS=-lm -lpthread
 
 

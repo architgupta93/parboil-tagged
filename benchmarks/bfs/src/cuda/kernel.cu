@@ -111,13 +111,14 @@ struct LocalQueues {
     int q_i = threadIdx.x & MOD_OP; // w-queue index
     int local_shift = threadIdx.x >> EXP; // shift within a w-queue
 
+    __asm__("INTRN:");
     while(local_shift < tail[q_i]){
       dst[prefix_q[q_i] + local_shift] = elems[q_i][local_shift];
 
       //multiple threads are copying elements at the same time,
       //so we shift by multiple elements for next iteration  
       local_shift += sharers[q_i];
-    __asm__("EXTRN:");
+    __asm__("INTRN:");
     }
   }
 };
@@ -134,6 +135,7 @@ __device__ void start_global_barrier(int fold){
   __asm__("EXTRN:");
   if(threadIdx.x == 0){
     atomicAdd((int*)&count, 1);
+    __asm__("EXTRN:");
     while( count < NUM_SM*fold){
       ;
     __asm__("EXTRN:");
@@ -180,7 +182,6 @@ visit_node(int pid,
       __asm__("INTRN:");
       if(old_color != gray_shade) {
 	//push to the queue
-        __asm__("INTRN:");
 	local_q.append(index, overflow, id);
       }
     }
@@ -254,14 +255,13 @@ BFS_in_GPU_kernel(int *q1,
     __asm__("INTRN:");
     if(tot_sum == 0)//the new frontier becomes empty; BFS is over
     {  
-      __asm__("INTRN:");
+      __asm__("INTRN:");	// TODO: Check if return maps to a branch
       return;
     }
     __asm__("EXTRN:");
     if(tot_sum <= MAX_THREADS_PER_BLOCK){
       //the new frontier is still within one-block limit;
       //stay in current kernel
-      __asm__("EXTRN:");
       local_q.concatenate(next_wf, prefix_q);
       __syncthreads();
       no_of_nodes = tot_sum;
@@ -281,6 +281,7 @@ BFS_in_GPU_kernel(int *q1,
     else{
       //the new frontier outgrows one-block limit; terminate current kernel
       local_q.concatenate(q2, prefix_q);
+      __asm__("EXTRN:");
       return;
     }
   __asm__("EXTRN:");
@@ -385,7 +386,7 @@ BFS_kernel_multi_blk_inGPU(int *q1,
     //synchronize among all the blks
     start_global_barrier(kt+1);
     __asm__("EXTRN:");
-    __asm__("EXTRN:");
+    __asm__("EXTRN:");	//TODO: Check if 2 conditions = 2 branches
     if(blockIdx.x == 0 && threadIdx.x == 0){
       stay_vol = 0;
       __asm__("EXTRN:");
@@ -401,14 +402,15 @@ BFS_kernel_multi_blk_inGPU(int *q1,
     if(stay_vol == 0)
     {
       __asm__("EXTRN:");
-      __asm__("EXTRN:");
+      __asm__("EXTRN:"); //TODO: Check if 2 conditions = 2 branches
       if(blockIdx.x == 0 && threadIdx.x == 0)
       {
         *global_kt = kt;
         *switch_k = (odd_time+1)%2;
         *no_of_nodes = no_of_nodes_vol;
       }
-      return;
+      __asm__("EXTRN:");
+      return;	// TODO: Return statement
     }
   __asm__("EXTRN:");
   }
